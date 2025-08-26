@@ -1,0 +1,2 @@
+const adminUrl = "/api/admin";
+

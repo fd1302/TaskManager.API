@@ -1,0 +1,6 @@
+@FD.TaskManager.API_HostAddress = http://localhost:5152
+
+GET {{FD.TaskManager.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

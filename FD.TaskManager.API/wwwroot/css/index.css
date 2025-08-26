@@ -1,0 +1,49 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.welcome-container h1 {
+    text-align: center;
+    margin-top: 10%;
+    border-bottom: 1px solid black;
+    width: 70%;
+}
+
+.appdescription {
+    text-align: center;
+}
+
+.main-container {
+    display: grid;
+    grid-template-columns: 20% 30% auto;
+    grid-template-rows: 80px 120px;
+    gap: 10px;
+    padding: 10px;
+}
+
+.container-item {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.description-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.description-image img {
+    height: 800px;
+}

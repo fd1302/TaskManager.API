@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png">
+    <link rel="stylesheet" href="css/login.css">
+    <script src="js/authentication.js"></script>
+    <script src="js/tenant.js"></script>
+</head>
+<body>
+    <nav></nav>
+<div class="login-container" id="formBox">
+    <h2 id="formTitle">Login</h2>
+    <form id="loginForm" action="#" method="post">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="signup-only">
+            <label for="tenantName">Tenant Name</label>
+            <input type="text" id="tenantName" name="tenantName">
+            <label for="subscriptionPlan">Subscription</label>
+            <input type="text" id="subscriptionPlan" name="subscriptionPlan">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Write about your work..."></textarea>
+        </div>
+
+        <div id="roleDiv">
+            <label for="role">Role</label>
+            <select id="role" name="role">
+                <option value="">Select a role</option>
+                <option value="Tenant">Tenant</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="Member">Member</option>
+            </select>
+            <p>Login as member if you are not part of any Tenant.</p>
+        </div>
+        <input type="submit" value="Sign Up" id="signupBtn" onclick="addTenant(event)" class="signup-btn">
+        <input type="submit" value="Login" id="loginBtn" onclick="login(event)" class="login-btn">
+    </form>
+
+    <div class="toggle-link" id="toggleForm" onclick="tenantSignupForm()">Don’t have an account? Sign up</div>
+</div>
+    <script src="js/navbar.js"></script>
+</body>
+</html>

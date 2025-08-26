@@ -1,0 +1,243 @@
+:root {
+    --base-text-color: white;
+    --text-color-hover: #fb8500;
+    --text-color: #ffb703;
+    --text-light-color: #a7a7a7;
+    --sidebar-bg-color: #1b191b;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    transition: 0.2s ease-in-out;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.main-container {
+    display: grid;
+    grid-template-areas: 
+    "nav nav"
+    "sidebar main-container-item"
+    "footer footer";
+    grid-template-columns: 15% 85%;
+    grid-template-rows: 100% 100%;
+    background-color: rgb(206, 206, 206);
+}
+
+.sidebar {
+    background-color: var(--sidebar-bg-color);
+    color: var(--text-color);
+    margin-top: 2px solid var(--text-color-hover);
+    min-height: 700px;
+}
+
+.sidebar h2 {
+    margin-left: 10px;
+}
+
+.side-items {
+    color: var(--base-text-color);
+    margin-top: 15px;
+}
+
+.side-items ul, li {
+    list-style-type: none;
+    display: flex;
+}
+
+.side-items a {
+    color: white;
+    text-decoration: none;
+    margin-left: 7px;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.7em;
+    border-left: 2px solid var(--sidebar-bg-color);
+    width: 100%;
+    cursor: pointer;
+}
+
+.side-items a:hover {
+    color: var(--text-color-hover);
+    margin-left: 13px;
+    border-left: 2px solid var(--text-color-hover);
+    svg {
+        fill: var(--text-color-hover);
+    }
+}
+
+.side-items svg:nth-child(3) {
+    margin-left: auto;
+}
+
+.sidebar-svg-active {
+    display: none;
+}
+
+.sidebar-svg-disable {
+    display: block;
+}
+
+.main-container-item {
+    color: var(--sidebar-bg-color);
+    margin: 15px;
+}
+
+/* User info */
+
+.main-container-item-userinfo {
+    display: flex;
+    justify-content: center;
+    color: var(--sidebar-bg-color);
+    margin: 15px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(245, 245, 245);
+    border: 1px solid rgb(216, 216, 216);
+    border-radius: 2em;
+    width: 400px;
+    min-width: 300px;
+    max-width: 500px;
+    min-height: 300px;
+    max-height: 400px;
+    box-shadow: -10px 8px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-info label {
+    color: var(--text-light-color);
+    padding: 1em;
+}
+
+.user-info h3 {
+    color: var(--sidebar-bg-color);
+}
+
+/* Projects */
+.main-container-item-pbt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 15px;
+}
+
+.container-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+    border-radius: 3em;
+    border: 1px solid rgba(0, 0, 0, 0.418);
+    background-color: rgb(245, 245, 245);
+    width: 400px;
+    min-width: 300px;
+    max-width: 500px;
+    min-height: 300px;
+    max-height: 400px;
+    box-shadow: -10px 8px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.container-item:hover {
+    box-shadow: -10px 8px 8px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.726);
+}
+
+.container-item label {
+    color: var(--text-light-color);
+}
+
+.container-item h3 {
+    color: var(--sidebar-bg-color);
+}
+
+.container-item button {
+    padding: 8px 12px;
+    border: none;
+    background-color: var(--text-color);
+    color: var(--sidebar-bg-color);
+    border-radius: 1em;
+}
+
+.container-item button:hover {
+    background-color: var(--text-color-hover);
+    color: white;
+}
+
+.tenant-update {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.tenant-update input {
+    padding: 15px;
+    border: 1px solid var(--text-light-color);
+    color: var(--text-light-color);
+    margin-bottom: 30px;
+}
+
+.tenant-update input:focus {
+    outline: none;
+    color: black;
+}
+
+.tenant-update button {
+    width: 6%;
+    height: 35px;
+    border: none;
+    background-color: var(--text-color);
+    cursor: pointer;
+    border-radius: .5em;
+}
+
+.tenant-update button:hover {
+    color: var(--base-text-color);
+    background-color: var(--text-color-hover);
+}
+
+
+footer {
+    background-color: #1b191b;
+    color: var(--base-text-color);
+    padding: 100px;
+}
+
+
+
+@media (max-width: 840px) {
+    .side-items a {
+        border-bottom: none;
+    }
+
+    .side-items a:hover {
+        border-bottom: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar h2 {
+        display: none;
+    }
+
+    .side-items span {
+        display: none;
+    }
+}
