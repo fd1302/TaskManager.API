@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using TaskManager.DataAccess.DbConnection;
-using TaskManager.Shared.Dto_s.Member;
 using TaskManager.Shared.Entities;
 
 namespace TaskManager.DataAccess.Repository;
@@ -18,7 +17,7 @@ public class MemberRepository
         string query =
             @"INSERT INTO Members
             VALUES (@Id, @TenantId, @UserName, @Email, @Password, @JoinedAt, @Role)";
-        if(string.IsNullOrEmpty(member.TenantId.ToString()))
+        if (string.IsNullOrEmpty(member.TenantId.ToString()))
         {
             query =
                 @"INSERT INTO Members
@@ -97,13 +96,9 @@ public class MemberRepository
         var managers = await connection.QueryAsync<Member>(query);
         return managers;
     }
-    public async Task<Member?> GetMemberAsync(Guid? id, string? userName)
+    public async Task<Member?> GetMemberAsync(Guid id)
     {
-        string query;
-        var connection = _dbConnection.CreateConnection();
-        if (id != null)
-        {
-            query =
+        string query =
                 @"SELECT
                     Id,
                     TenantId,
@@ -112,24 +107,9 @@ public class MemberRepository
                     JoinedAt,
                     Role
                 FROM Members WHERE Id = @id";
-            var resultWithId = await connection.QuerySingleOrDefaultAsync<Member?>(query, new { id });
-            return resultWithId;
-        }
-        else if (!string.IsNullOrEmpty(userName))
-        {
-            query =
-                @"SELECT
-                    Id,
-                    TenantId,
-                    UserName,
-                    Email,
-                    JoinedAt,
-                    Role
-                FROM Members WHERE UserName = @userName";
-            var resultWithUserName = await connection.QuerySingleOrDefaultAsync<Member?>(query, new { userName });
-            return resultWithUserName;
-        }
-        return null;
+        var connection = _dbConnection.CreateConnection();
+        var result = await connection.QuerySingleOrDefaultAsync<Member?>(query, new { id });
+        return result;
     }
     public async Task<Member?> GetMemberForAuthAsync(string userName)
     {
@@ -151,11 +131,11 @@ public class MemberRepository
     public async Task<bool> UpdateAsync(Member member, Guid id)
     {
         var updates = new List<string>();
-        if(!string.IsNullOrEmpty(member.UserName))
+        if (!string.IsNullOrEmpty(member.UserName))
         {
             updates.Add("UserName = @UserName");
         }
-        if(!string.IsNullOrEmpty(member.Email))
+        if (!string.IsNullOrEmpty(member.Email))
         {
             updates.Add("Email = @Email");
         }

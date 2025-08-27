@@ -1,0 +1,127 @@
+:root {
+    --base-text-color: white;
+    --text-color-hover: #fb8500;
+    --text-color: #ffb703;
+    --text-light-color: #a7a7a7;
+    --sidebar-bg-color: #1b191b;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0} 
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+.close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    padding: 16px 20px;
+    background-color: var(--sidebar-bg-color);
+    color: var(--text-color);
+}
+
+.modal-body {
+    padding: 2px 16px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.modal-footer {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    padding: 16px 20px;
+    background-color: var(--sidebar-bg-color);
+    color: var(--text-color-hover);
+}
+
+.modal-footer button {
+    background-color: var(--text-color);
+    padding: 10px 100px;
+    border: none;
+    border-radius: .5em;
+    font-weight: bolder;
+}
+
+.modal-footer button:hover {
+    background-color: var(--text-color-hover);
+    color: white;
+}
+
+.modal-body label {
+    color: var(--sidebar-bg-color);
+}
+
+.modal-body input {
+    padding: 15px;
+    border: 1px solid var(--text-light-color);
+    border-radius: .7em;
+    color: var(--text-light-color);
+    margin: 5px 0 15px 0;
+    width: 100%;
+}
+
+.modal-body input:focus {
+    outline: none;
+    color: black;
+    border: 1px solid black;
+}
+
+.modal-body select {
+    padding: 15px;
+    border: 1px solid var(--text-light-color);
+    border-radius: .7em;
+    color: var(--text-light-color);
+    margin: 5px 0 15px 0;
+    width: 9%;
+}
+
+.modal-body select:hover,
+.modal-body select:focus {
+    color: var(--text-color-hover);
+    background-color: var(--sidebar-bg-color);
+}

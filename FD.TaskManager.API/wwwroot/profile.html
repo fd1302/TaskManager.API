@@ -6,9 +6,22 @@
     <title>Profile</title>
     <link rel="icon" type="image/x-icon" href="images/logo.png">
     <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/modal.css">
 </head>
 <body>
     <nav></nav>
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalHeader">
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+
+            </div>
+            <div class="modal-footer" id="modalFooter">
+            </div>
+        </div>
+    </div>
     <div class="main-container">
         <div class="sidebar">
             <h2>Panel</h2>
@@ -51,7 +64,12 @@
     <footer>
         <h1>Footer</h1>
     </footer>
+    <script src="js/urls.js"></script>
     <script src="js/navbar.js"></script>
     <script src="js/profile.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/project.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/taskItem.js"></script>
 </body>
 </html>

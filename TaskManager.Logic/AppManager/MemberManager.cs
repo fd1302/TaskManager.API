@@ -97,29 +97,15 @@ public class MemberManager
         var mappedMembers = memebers.Select(_memberMapping.MemberToMemberDto);
         return mappedMembers;
     }
-    public async Task<MemberDto?> GetMemberAsync(Guid? id, string? userName)
+    public async Task<MemberDto?> GetMemberAsync(Guid id)
     {
-        if (id != null)
+        var memberWithId = await _memberRepository.GetMemberAsync(id);
+        if (memberWithId == null)
         {
-            var memberWithId = await _memberRepository.GetMemberAsync(id, null);
-            if (memberWithId == null)
-            {
-                return null;
-            }
-            var mappedMemberA = _memberMapping.MemberToMemberDto(memberWithId);
-            return mappedMemberA;
+            return null;
         }
-        else if (userName != null)
-        {
-            var memberWithUserName = await _memberRepository.GetMemberAsync(null, userName);
-            if (memberWithUserName == null)
-            {
-                return null;
-            }
-            var mappedMemberB = _memberMapping.MemberToMemberDto(memberWithUserName);
-            return mappedMemberB;
-        }
-        return null;
+        var mappedMember = _memberMapping.MemberToMemberDto(memberWithId);
+        return mappedMember;
     }
     public async Task<ResultDto> UpdateAsync(UpdateMemberDto updateMemberDto, Guid id)
     {

@@ -1,12 +1,3 @@
-const authUrl = "/api/authentication";
-const tenantUrl = "/api/tenant";
-const adminUrl = "/api/admin";
-const managerUrl = "/api/manager";
-const memberUrl = "/api/member";
-const projectUrl = "/api/project";
-const boardUrl = "/api/board";
-const taskUrl = "/api/task";
-
 async function getUserInfoFromToken() {
     try {
         const response = await fetch(`${authUrl}/senduserinfo`);
@@ -132,6 +123,7 @@ async function tenantUpdateStyle() {
     const tenant = await getTenant();
     const mainContainer = document.getElementById("mainContainerItem");
     mainContainer.innerHTML = "";
+    mainContainer.className = "main-container-item";
     const tenantUpdate = document.createElement("div");
     tenantUpdate.classList.add("tenant-update");
     tenantUpdate.id = "tenantUpdate";
@@ -338,7 +330,6 @@ function projectsStyle(projects) {
     projects.forEach(project => {
         const item = document.createElement("div");
         item.classList.add("container-item");
-        item.onclick = function() { getBoardsWithProjectId(project.id) };
         mainContainer.appendChild(item);
         const itemTitle = document.createElement("h2");
         itemTitle.textContent = "(Project)";
@@ -361,10 +352,22 @@ function projectsStyle(projects) {
         const createdAt = document.createElement("h3");
         createdAt.textContent = project.createdAt;
         item.appendChild(createdAt);
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit project";
-        editBtn.onclick = function() { updateProject(project.id) };
-        item.appendChild(editBtn);
+        const buttonsDiv = document.createElement("div");
+        buttonsDiv.classList.add("item-buttons");
+        item.appendChild(buttonsDiv);
+        const buttonsSpan = document.createElement("span");
+        buttonsDiv.appendChild(buttonsSpan);
+        const editProject = document.createElement("a");
+        editProject.textContent = "Edit project  ";
+        editProject.onclick = function() { openUpdateModal(project.id, "project", project)};
+        buttonsSpan.appendChild(editProject);
+        const p = document.createElement("a");
+        p.textContent = "  /  ";
+        buttonsSpan.appendChild(p);
+        const showBoards = document.createElement("a");
+        showBoards.textContent = "  Related boards";
+        showBoards.onclick = function() { getBoardsWithProjectId(project.id)};
+        buttonsSpan.appendChild(showBoards);
     });
 }
 
@@ -395,7 +398,6 @@ function boardStyle(boards) {
         const item = document.createElement("div");
         item.classList.add("container-item");
         item.id = board.id;
-        item.onclick = function() { getTasksWithBoardId(board.id) };
         mainContainer.appendChild(item);
         const itemTitle = document.createElement("h2")
         itemTitle.textContent = "(Board)";
@@ -412,33 +414,90 @@ function boardStyle(boards) {
         const createdAt = document.createElement("h3");
         createdAt.textContent = board.createdAt;
         item.appendChild(createdAt);
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit board";
-        editBtn.onclick = function() { updateProject(board.id) };
-        item.appendChild(editBtn);
+        const buttonsDiv = document.createElement("div");
+        buttonsDiv.classList.add("item-buttons");
+        item.appendChild(buttonsDiv);
+        const buttonsSpan = document.createElement("span");
+        buttonsDiv.appendChild(buttonsSpan);
+        const editBoard = document.createElement("a");
+        editBoard.textContent = "Edit board  ";
+        editBoard.onclick = function() { openUpdateModal(board.id, "board", board)};
+        buttonsSpan.appendChild(editBoard);
+        const p = document.createElement("a");
+        p.textContent = "  /  ";
+        buttonsSpan.appendChild(p);
+        const showTaskItems = document.createElement("a");
+        showTaskItems.textContent = "  Related tasks";
+        showTaskItems.onclick = function() { getTasksWithBoardId(board.id)};
+        buttonsSpan.appendChild(showTaskItems);
     })
 }
 
 // Task functions
 async function getTasksWithBoardId(id) {
     try {
-        const response = await fetch(`${taskUrl}/gettaskitemwithboardid?id=${id}`);
+        const response = await fetch(`${taskItemUrl}/gettaskitemwithboardid?id=${id}`);
         if(!response.ok) {
             throw new Error(`There was a problem while handling the request: ${response.status}`);
         }
-        const tasks = await response.json();
-        taskStyle(tasks);
+        const taskItems = await response.json();
+        const taskIsEmpty = jsonIsEmpty(taskItems);
+        if(taskIsEmpty) {
+            alert("No task found.");
+            return;
+        }
+        taskStyle(taskItems);
     } catch (error) {
         console.error(`Error: ${error}`);
     }
 }
 
-function taskStyle(tasks) {
+function taskStyle(taskItems) {
     const mainContainer = document.getElementById("mainContainerItem");
     mainContainer.innerHTML = "";
     mainContainer.className = "main-container-item-pbt";
-    boardStyle.forEach(task => {
-
+    taskItems.forEach(taskItem => {
+        const item = document.createElement("div");
+        item.classList.add("container-item");
+        item.id = taskItem.id;
+        mainContainer.appendChild(item);
+        const itemTitle = document.createElement("h2");
+        itemTitle.textContent = "(Task)";
+        item.appendChild(itemTitle);
+        const titleLabel = document.createElement("label");
+        titleLabel.textContent = "Title: ";
+        item.appendChild(titleLabel);
+        const title = document.createElement("h3");
+        title.textContent = taskItem.title;
+        item.appendChild(title);
+        const descriptionLabel = document.createElement("label");
+        descriptionLabel.textContent = "Description: ";
+        item.appendChild(descriptionLabel);
+        const description = document.createElement("h3");
+        description.textContent = taskItem.description;
+        item.appendChild(description);
+        const assignedMemberLabel = document.createElement("label");
+        assignedMemberLabel.textContent = "Assigned Member: ";
+        item.appendChild(assignedMemberLabel);
+        const assignedMember = document.createElement("h3");
+        assignedMember.textContent = taskItem.assignedMemberName;
+        item.appendChild(assignedMember);
+        const statusLabel = document.createElement("label");
+        statusLabel.textContent = "Status: ";
+        item.appendChild(statusLabel);
+        const status = document.createElement("h3");
+        status.textContent = taskItem.status;
+        item.appendChild(status);
+        const createdAtLabel = document.createElement("label");
+        createdAtLabel.textContent = "Created at: ";
+        item.appendChild(createdAtLabel);
+        const createdAt = document.createElement("h3");
+        createdAt.textContent = taskItem.createdAt;
+        item.appendChild(createdAt);
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit board";
+        editBtn.onclick = function() { openUpdateModal(taskItem.id, "taskItem", taskItem) };
+        item.appendChild(editBtn);
     })
 }
 

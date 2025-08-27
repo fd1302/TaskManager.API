@@ -57,7 +57,7 @@ public class MemberController : ControllerBase
             return Unauthorized();
         }
         var id = _authService.GetIdFromToken(token);
-        var result = await _memberManager.GetMemberAsync(id, null);
+        var result = await _memberManager.GetMemberAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
     [HttpPatch("updatemember")]

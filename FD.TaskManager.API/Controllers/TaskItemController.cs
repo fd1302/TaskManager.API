@@ -42,7 +42,7 @@ public class TaskItemController : ControllerBase
     public async Task<IActionResult> Update(Guid id, UpdateTaskItemDto updateTaskItemDto)
     {
         var result = await _taskItemManager.UpdateAsync(id, updateTaskItemDto);
-        return result.Success is not false ? Ok(result) : NotFound(result.Message);
+        return result.Success is not false ? Ok(result) : NotFound(result);
     }
     [HttpDelete("deletetaskitem")]
     public async Task<IActionResult> Delete(Guid id)

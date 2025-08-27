@@ -24,6 +24,7 @@ public class TaskItemMapping
             Title = taskItem.Title,
             Description = taskItem.Description,
             AssignedMemberId = taskItem.AssignedMemberId,
+            AssignedMemberName = taskItem.AssignedMemberName,
             Status = taskItem.Status,
             CreatedAt = taskItem.CreatedAt
         };

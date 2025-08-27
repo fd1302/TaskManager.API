@@ -26,12 +26,12 @@ public class TaskItemManager
     public async Task<AddEntityResultDto> AddAsync(AddTaskItemDto addTaskItemDto)
     {
         bool boardExists = await _boardRepository.BoardExistsAsync(addTaskItemDto.BoardId);
-        bool memberExists = await _memberRepository.MemberExistsAsync(null, addTaskItemDto.AssignedMemberId);
         if (!boardExists)
         {
             throw new ArgumentNullException("Board not found.");
         }
-        else if (!memberExists)
+        bool memberExists = await _memberRepository.MemberExistsAsync(null, addTaskItemDto.AssignedMemberId);
+        if (!memberExists)
         {
             throw new ArgumentNullException("Member not found.");
         }
@@ -54,6 +54,9 @@ public class TaskItemManager
         var taskItem = _taskItemMapping.AddTaskItemDtoToTaskItem(addTaskItemDto);
         taskItem.Id = Guid.NewGuid();
         taskItem.CreatedAt = DateTime.UtcNow.ToString().Substring(0, 9);
+        var member = await _memberRepository.GetMemberAsync(taskItem.AssignedMemberId);
+        taskItem.AssignedMemberName = member!.UserName;
+        Console.WriteLine(member.UserName);
         var result = await _taskItemRepository.AddAsync(taskItem);
         if (!result)
         {

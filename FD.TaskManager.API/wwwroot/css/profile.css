@@ -141,6 +141,7 @@ body {
     flex-direction: column;
     text-align: center;
     gap: 10px;
+    padding: 15px;
     border-radius: 3em;
     border: 1px solid rgba(0, 0, 0, 0.418);
     background-color: rgb(245, 245, 245);
@@ -150,7 +151,6 @@ body {
     min-height: 300px;
     max-height: 400px;
     box-shadow: -10px 8px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
 }
 
 .container-item:hover {
@@ -167,7 +167,7 @@ body {
 }
 
 .container-item button {
-    padding: 8px 12px;
+    padding: 8px 16px;
     border: none;
     background-color: var(--text-color);
     color: var(--sidebar-bg-color);
@@ -177,6 +177,33 @@ body {
 .container-item button:hover {
     background-color: var(--text-color-hover);
     color: white;
+}
+
+.item-buttons {
+    background-color: var(--text-color);
+    padding: 10px 15px;
+    border-radius: 1em;
+}
+
+.item-buttons:hover {
+    background-color: var(--text-color-hover);
+}
+
+.item-buttons a {
+    padding: 5px;
+}
+
+.item-buttons a:hover {
+    color: white;
+}
+
+.item-buttons a:nth-child(2):hover {
+    color: black;
+}
+
+.item-buttons span {
+    display: flex;
+    cursor: pointer;
 }
 
 .tenant-update {
@@ -192,11 +219,13 @@ body {
     border: 1px solid var(--text-light-color);
     color: var(--text-light-color);
     margin-bottom: 30px;
+    border-radius: .6em;
 }
 
 .tenant-update input:focus {
     outline: none;
     color: black;
+    border: 1px solid black;
 }
 
 .tenant-update button {

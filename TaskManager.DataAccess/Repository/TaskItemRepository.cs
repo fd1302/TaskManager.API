@@ -17,7 +17,7 @@ public class TaskItemRepository
     {
         string query =
             @"INSERT INTO TaskItems
-            VALUES (@Id, @BoardId, @Title, @Description, @AssignedMemberId, @Status, @CreatedAt)";
+            VALUES (@Id, @BoardId, @Title, @Description, @AssignedMemberId, @AssignedMemberName, @Status, @CreatedAt)";
         var connection = _dbConnection.CreateConnection();
         var result = await connection.ExecuteAsync(query, new
         {
@@ -26,6 +26,7 @@ public class TaskItemRepository
             task.Title,
             task.Description,
             task.AssignedMemberId,
+            task.AssignedMemberName,
             task.Status,
             task.CreatedAt
         });
@@ -44,6 +45,7 @@ public class TaskItemRepository
                     Title,
                     Description,
                     AssignedMemberId,
+                    AssignedMemberName,
                     Status,
                     CreatedAt
                 FROM TaskItems
@@ -58,6 +60,7 @@ public class TaskItemRepository
                 Title,
                 Description,
                 AssignedMemberId,
+                AssignedMemberName,
                 Status,
                 CreatedAt
             FROM TaskItems";
@@ -73,6 +76,7 @@ public class TaskItemRepository
                 Title,
                 Description,
                 AssignedMemberId,
+                AssignedMemberName,
                 Status,
                 CreatedAt
             FROM TaskItems
@@ -81,7 +85,7 @@ public class TaskItemRepository
         var taskItem = await connection.QuerySingleOrDefaultAsync<TaskItem>(query, new { id });
         return taskItem;
     }
-    public async Task<IEnumerable<TaskItem>?> GetTaskItemsWithBoardIdAsync(Guid id)
+    public async Task<IEnumerable<TaskItem>?> GetTaskItemsWithBoardIdAsync(Guid boardId)
     {
         string query =
             @"SELECT
@@ -90,13 +94,14 @@ public class TaskItemRepository
                 TI.Title,
                 TI.Description,
                 TI.AssignedMemberId,
+                TI.AssignedMemberName,
                 TI.Status,
                 TI.CreatedAt
             FROM TaskItems TI
             JOIN Boards B ON B.Id = TI.BoardId
-            WHERE TI.BoardId = @id";
+            WHERE TI.BoardId = @boardId";
         var connection = _dbConnection.CreateConnection();
-        var result = await connection.QueryAsync<TaskItem>(query, new { id });
+        var result = await connection.QueryAsync<TaskItem>(query, new { boardId });
         return result;
     }
     public async Task<bool> UpdateAsync(Guid id, TaskItem taskItem)
