@@ -15,7 +15,7 @@ public class TaskItemMapping
             AssignedMemberId = addTaskItemDto.AssignedMemberId
         };
     }
-    public TaskItemDto TaskToTaskItemDto(TaskItem taskItem)
+    public TaskItemDto TaskItemToTaskItemDto(TaskItem taskItem)
     {
         return new TaskItemDto()
         {

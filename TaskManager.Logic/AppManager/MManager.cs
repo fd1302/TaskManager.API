@@ -11,17 +11,20 @@ public class MManager
 {
     private readonly ManagerRepository _managerRepository;
     private readonly MemberRepository _memberRepository;
+    private readonly AdminRepository _adminRepository;
     private readonly ManagerMapping _managerMapping;
     private readonly EmailVerification _emailVerification;
     private readonly PasswordHashing _passHasher;
     private readonly AuthService _authService;
-    public MManager(ManagerRepository managerRepository, MemberRepository memberRepository, ManagerMapping managerMapping,
-        EmailVerification emailVerification, PasswordHashing passHash, AuthService authService)
+    public MManager(ManagerRepository managerRepository, MemberRepository memberRepository, AdminRepository adminRepository,
+        ManagerMapping managerMapping, EmailVerification emailVerification, PasswordHashing passHash, AuthService authService)
     {
         _managerRepository = managerRepository ??
             throw new ArgumentNullException(nameof(managerRepository));
         _memberRepository = memberRepository ??
             throw new ArgumentNullException(nameof(memberRepository));
+        _adminRepository = adminRepository ??
+            throw new ArgumentNullException(nameof(adminRepository));
         _managerMapping = managerMapping ??
             throw new ArgumentNullException(nameof(managerMapping));
         _emailVerification = emailVerification ??
@@ -79,7 +82,7 @@ public class MManager
         var auth = new AuthenticationDto()
         {
             UserName = manager.UserName,
-            Password = addManagerDto.Password   
+            Password = addManagerDto.Password
         };
         var token = await _authService.ManagerAuthenticationAsync(auth);
         return new AddEntityResultDto()
@@ -108,6 +111,21 @@ public class MManager
         }
         var mappedManager = _managerMapping.ManagerTOManagerDto(manager);
         return mappedManager;
+    }
+    public async Task<IEnumerable<ManagerDto>?> GetManagersWithTenantIdAsync(UserTokenInfoDto userInfo)
+    {
+        var id = userInfo.Id;
+        if (userInfo.Role != "Tenant" && userInfo.TenantId != null)
+        {
+            id = (Guid)userInfo.TenantId;
+        }
+        var managers = await _managerRepository.GetManagersWithTenantIdAsync(id);
+        if (managers == null)
+        {
+            return null;
+        }
+        var mappedManagers = managers.Select(_managerMapping.ManagerTOManagerDto);
+        return mappedManagers;
     }
     public async Task<ResultDto> UpdateAsync(UpdateManagerDto updateManagerDto, Guid id)
     {
@@ -171,9 +189,9 @@ public class MManager
             Message = "Manager deleted successfuly."
         };
     }
-    public async Task<ResultDto> MemberToManagerPromotionAsync(PromotionDto promotionDto, Guid tenantId)
+    public async Task<ResultDto> PromotionToManagerAsync(PromotionDemotionDto promotionDto, Guid tenantId)
     {
-        if (promotionDto.PromotionRole != "Manager")
+        if (promotionDto.Role != "Manager")
         {
             throw new Exception("Invalid role.");
         }
@@ -190,7 +208,7 @@ public class MManager
         {
             return new ResultDto()
             {
-                Operation = "Update-Promotion",
+                Operation = "Update(Promotion)",
                 Message = "An error occurred"
             };
         }
@@ -200,6 +218,36 @@ public class MManager
             Success = true,
             Operation = "Update-Promotion",
             Message = "Promoted successfuly"
+        };
+    }
+    public async Task<ResultDto> DemotionToManagerAsync(PromotionDemotionDto demotionDto, Guid tenantId)
+    {
+        if (demotionDto.Role != "Manager")
+        {
+            throw new Exception("Invalid role.");
+        }
+        var admin = await _adminRepository.GetFullAdminInfoAsync(null, demotionDto.UserId);
+        if (admin == null)
+        {
+            throw new ArgumentNullException("Admin not found.");
+        }
+        var manager = _managerMapping.AdminTOManager(admin);
+        manager.Role = "Manager";
+        bool result = await _managerRepository.AddAsync(manager);
+        if (!result)
+        {
+            return new ResultDto()
+            {
+                Operation = "Update(Demotion)",
+                Message = "An error accurred"
+            };
+        }
+        var delete = await _adminRepository.DeleteAsync(admin.Id);
+        return new ResultDto()
+        {
+            Success = true,
+            Operation = "Update(Demotion)",
+            Message = "Demoted successfuly"
         };
     }
 }

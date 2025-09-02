@@ -46,4 +46,16 @@ public class ManagerMapping
             JoinedAt = member.JoinedAt
         };
     }
+    public Manager AdminTOManager(Admin admin)
+    {
+        return new Manager()
+        {
+            Id = admin.Id,
+            TenantId = admin.TenantId,
+            UserName = admin.UserName,
+            Password = admin.Password,
+            Email = admin.Email,
+            JoinedAt = admin.JoinedAt
+        };
+    }
 }

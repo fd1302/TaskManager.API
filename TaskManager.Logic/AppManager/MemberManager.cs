@@ -4,21 +4,26 @@ using TaskManager.Logic.Services;
 using TaskManager.Shared.Dto_s;
 using TaskManager.Shared.Dto_s.Authentication;
 using TaskManager.Shared.Dto_s.Member;
+using TaskManager.Shared.Entities;
 
 namespace TaskManager.Logic.AppManager;
 
 public class MemberManager
 {
     private readonly MemberRepository _memberRepository;
+    private readonly ManagerRepository _managerRepository;
     private readonly MemberMapping _memberMapping;
     private readonly PasswordHashing _passHasher;
     private readonly EmailVerification _emailVerification;
     private readonly AuthService _authService;
-    public MemberManager(MemberRepository memberRepository, MemberMapping memberMapping, PasswordHashing passHasher,
+    public MemberManager(MemberRepository memberRepository, ManagerRepository managerRepository,
+        MemberMapping memberMapping, PasswordHashing passHasher,
         EmailVerification emailVerification, AuthService authService)
     {
         _memberRepository = memberRepository ??
             throw new ArgumentNullException(nameof(memberRepository));
+        _managerRepository = managerRepository ??
+            throw new ArgumentNullException(nameof(managerRepository));
         _memberMapping = memberMapping ??
             throw new ArgumentNullException(nameof(memberMapping));
         _passHasher = passHasher ??
@@ -69,7 +74,7 @@ public class MemberManager
         member.JoinedAt = DateTime.UtcNow;
         member.Password = _passHasher.Sha256HashPass(addMemberDto.Password);
         var result = await _memberRepository.AddAsync(member);
-        if (result == 0)
+        if (!result)
         {
             return new AddEntityResultDto();
         }
@@ -106,6 +111,115 @@ public class MemberManager
         }
         var mappedMember = _memberMapping.MemberToMemberDto(memberWithId);
         return mappedMember;
+    }
+    public async Task<IEnumerable<MemberDto>?> GetMembersWithTenantIdAsync(UserTokenInfoDto userInfo)
+    {
+        var id = userInfo.Id;
+        if (userInfo.Role != "Tenant" && userInfo.TenantId != null)
+        {
+            id = (Guid)userInfo.TenantId;
+        }
+        var members = await _memberRepository.GetMembersWithTenantIdAsync(id);
+        if (members == null)
+        {
+            return null;
+        }
+        var mappedMembers = members.Select(_memberMapping.MemberToMemberDto);
+        return mappedMembers;
+    }
+    public async Task<IEnumerable<MemberDto>?> GetMembersWithNoTenantAsync()
+    {
+        var members = await _memberRepository.GetMembersAsync(null);
+        if (members == null)
+        {
+            return null;
+        }
+        List<Member> removedMembers = [];
+        foreach (var m in members)
+        {
+            if (m.TenantId == Guid.Empty)
+            {
+                removedMembers.Add(m);
+            }
+        }
+        var mappedMembers = removedMembers.Select(_memberMapping.MemberToMemberDto);
+        return mappedMembers;
+    }
+    public async Task<ResultDto> JoinTenantAsync(Guid memberId, UserTokenInfoDto userInfo)
+    {
+        var tenantId = userInfo.Id;
+        if (userInfo.Role != "Tenant" && userInfo.TenantId != null)
+        {
+            tenantId = (Guid)userInfo.TenantId!;
+        }
+        var result = await _memberRepository.JoinTenantAsync(memberId, tenantId);
+        if (!result)
+        {
+            return new ResultDto
+            {
+                Operation = "Update(Join Tenant)",
+                Message = "Failed"
+            };
+        }
+        return new ResultDto
+        {
+            Operation = "Update(Join Tenant)",
+            Message = "Updated Successfuly",
+            Success = true
+        };
+    }
+    public async Task<ResultDto> DemotionToMember(PromotionDemotionDto demotionDto)
+    {
+        var manager = await _managerRepository.GetManagerFullInfoAsync(demotionDto.UserId);
+        if (manager == null)
+        {
+            throw new ArgumentNullException("Manager not found.");
+        }
+        var member = _memberMapping.ManagerTOMember(manager);
+        member.Role = "Member";
+        var result = await _memberRepository.AddAsync(member);
+        if (!result)
+        {
+            return new ResultDto()
+            {
+                Operation = "Update(Demotion)",
+                Message = "Failed"
+            };
+        }
+        await _managerRepository.DeleteAsync(manager.Id);
+        return new ResultDto()
+        {
+            Success = true,
+            Operation = "Update(Demotion)",
+            Message = "Demoted successfuly"
+        };
+    }
+    public async Task<ResultDto> RemoveTenantMemberAsync(PromotionDemotionDto demotionDto)
+    {
+        var memberExists = await _memberRepository.MemberExistsAsync(null, demotionDto.UserId);
+        if (!memberExists)
+        {
+            return new ResultDto()
+            {
+                Operation = "Update(Demotion)",
+                Message = "Member not found."
+            };
+        }
+        var result = await _memberRepository.RemoveTenantMemberAsync(demotionDto.UserId);
+        if (!result)
+        {
+            return new ResultDto()
+            {
+                Operation = "Update(Demotion)",
+                Message = "An error accured"
+            };
+        }
+        return new ResultDto()
+        {
+            Success = true,
+            Operation = "Update(Demotion)",
+            Message = "Demoted successfuly"
+        };
     }
     public async Task<ResultDto> UpdateAsync(UpdateMemberDto updateMemberDto, Guid id)
     {

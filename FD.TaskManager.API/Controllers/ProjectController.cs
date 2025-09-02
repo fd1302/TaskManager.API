@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManager.Logic.AppManager;
 using TaskManager.Logic.Services;
 using TaskManager.Shared.Dto_s.Project;
@@ -18,10 +19,13 @@ public class ProjectController : ControllerBase
         _authService = authService ??
             throw new ArgumentNullException(nameof(authService));
     }
-    [HttpPost]
-    public async Task<IActionResult> Add(AddProjectDto addProjectDto, Guid tenantId)
+    [Authorize(Roles = "Tenant, Admin")]
+    [HttpPost("add")]
+    public async Task<IActionResult> Add(AddProjectDto addProjectDto)
     {
-        var result = await _projectManager.AddAsync(tenantId, addProjectDto);
+        Request.Cookies.TryGetValue("auth-token", out var token);
+        var info = _authService.GetUserInfoFromToken(token!);
+        var result = await _projectManager.AddAsync(info, addProjectDto);
         return Ok(result);
     }
     [HttpGet("getprojects")]

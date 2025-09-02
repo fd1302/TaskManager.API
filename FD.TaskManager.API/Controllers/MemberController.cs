@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManager.Logic.AppManager;
 using TaskManager.Logic.Services;
+using TaskManager.Shared.Dto_s;
 using TaskManager.Shared.Dto_s.Member;
 
 namespace FD.TaskManager.API.Controllers;
@@ -26,7 +28,7 @@ public class MemberController : ControllerBase
             var result = await _memberManager.AddAsync(addMemberDto);
             if (result.IsAdded != false & result.Token != null)
             {
-                Response.Cookies.Append("auth-token", result.Token, new CookieOptions()
+                Response.Cookies.Append("auth-token", result.Token!, new CookieOptions()
                 {
                     HttpOnly = true,
                     Secure = true,
@@ -42,7 +44,7 @@ public class MemberController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-    [HttpGet("getmemebers")]
+    [HttpGet("getmembers")]
     public async Task<IActionResult> GetMembers(string? searchQuery)
     {
         var result = await _memberManager.GetMembersAsync(searchQuery);
@@ -52,35 +54,62 @@ public class MemberController : ControllerBase
     public async Task<IActionResult> GetMember()
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
-        if(token == null)
-        {
-            return Unauthorized();
-        }
-        var id = _authService.GetIdFromToken(token);
+        var id = _authService.GetIdFromToken(token!);
         var result = await _memberManager.GetMemberAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
-    [HttpPatch("updatemember")]
+    [HttpGet("getmemberswithtenantid")]
+    public async Task<IActionResult> GetMembersWithTenantId()
+    {
+        Request.Cookies.TryGetValue("auth-token", out var token);
+        var info = _authService.GetUserInfoFromToken(token!);
+        var result = await _memberManager.GetMembersWithTenantIdAsync(info);
+        return result is not null ? Ok(result) : NotFound();
+    }
+    [HttpGet("getmemberswithnotenant")]
+    public async Task<IActionResult> GetMembersWithNoTenant()
+    {
+        var result = await _memberManager.GetMembersWithNoTenantAsync();
+        return result is not null ? Ok(result) : NotFound();
+    }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
+    [HttpPatch("jointenant")]
+    public async Task<IActionResult> JoinTenant(Guid memberId)
+    {
+        Request.Cookies.TryGetValue("auth-token", out var token);
+        var info = _authService.GetUserInfoFromToken(token!);
+        var result = await _memberManager.JoinTenantAsync(memberId, info);
+        return Ok(result);
+    }
+    [Authorize(Roles = "Tenant, Admin")]
+    [HttpPatch("demotion")]
+    public async Task<IActionResult> DemotionToMember(PromotionDemotionDto demotionDto)
+    {
+        Request.Cookies.TryGetValue("auth-token", out var token);
+        var info = _authService.GetUserInfoFromToken(token!);
+        var result = await _memberManager.DemotionToMember(demotionDto);
+        return Ok(result);
+    }
+    [Authorize(Roles = "Tenant, Admin")]
+    [HttpPatch("removetenantmember")]
+    public async Task<IActionResult> RemoveTenantMember(PromotionDemotionDto demotionDto)
+    {
+        var result = await _memberManager.RemoveTenantMemberAsync(demotionDto);
+        return Ok(result);
+    }
+    [HttpPatch("update")]
     public async Task<IActionResult> Update(UpdateMemberDto updateMemberDto)
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
-        if (token == null)
-        {
-            return Unauthorized();
-        }
-        var id = _authService.GetIdFromToken(token);
+        var id = _authService.GetIdFromToken(token!);
         var result = await _memberManager.UpdateAsync(updateMemberDto, id);
         return Ok(result);
     }
-    [HttpDelete("deletmember")]
+    [HttpDelete("delete")]
     public async Task<IActionResult> Delete()
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
-        if (token == null)
-        {
-            return Unauthorized();
-        }
-        var id = _authService.GetIdFromToken(token);
+        var id = _authService.GetIdFromToken(token!);
         var result = await _memberManager.DeleteAsync(id);
         if (result.Success)
         {

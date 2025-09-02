@@ -95,6 +95,16 @@ public class AdminManager
             mappedAdmin.TenantName = tenantName.Name;
         return mappedAdmin;
     }
+    public async Task<IEnumerable<AdminDto>?> GetAdminsWithTenantIdAsync(Guid id)
+    {
+        var admins = await _adminRepository.GetAdminsWithTenantIdAsync(id);
+        if (admins == null)
+        {
+            return null;
+        }
+        var mappedAdmins = admins.Select(_adminMapping.AdminTOAdminDto);
+        return mappedAdmins;
+    }
     public async Task<ResultDto> UpdateAsync(UpdateAdminDto updateAdminDto, Guid id)
     {
         var admin = await _adminRepository.ExistsAsync(id);
@@ -157,13 +167,13 @@ public class AdminManager
             Message = "Admin deleted successfuly."
         };
     }
-    public async Task<ResultDto> ManagerToAdminPromotionAsync(PromotionDto promotionDto)
+    public async Task<ResultDto> PromotionToAdminAsync(PromotionDemotionDto promotionDto)
     {
-        if (promotionDto.PromotionRole != "Admin")
+        if (promotionDto.Role != "Admin")
         {
             throw new Exception("Invalid role.");
         }
-        var manager = await _managerRepository.GetManagerForPromotionAsync(promotionDto.UserId);
+        var manager = await _managerRepository.GetManagerFullInfoAsync(promotionDto.UserId);
         if (manager == null)
         {
             throw new ArgumentNullException("Manager not found.");

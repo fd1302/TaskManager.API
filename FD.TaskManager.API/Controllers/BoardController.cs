@@ -15,7 +15,7 @@ public class BoardController : ControllerBase
         _boardManager = boardManager ??
             throw new ArgumentNullException(nameof(boardManager));
     }
-    [HttpPost]
+    [HttpPost("add")]
     public async Task<IActionResult> Add(Guid projectId, AddBoardDto addBoardDto)
     {
         var result = await _boardManager.AddAsync(projectId, addBoardDto);

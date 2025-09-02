@@ -106,6 +106,22 @@ public class ManagerRepository
         var manager = await connection.QuerySingleOrDefaultAsync<Manager?>(query, new { id });
         return manager;
     }
+    public async Task<IEnumerable<Manager>?> GetManagersWithTenantIdAsync(Guid id)
+    {
+        string query =
+            @"SELECT
+                M.Id,
+                M.TenantId,
+                M.UserName,
+                M.Email,
+                M.JoinedAt
+            FROM Managers M
+            LEFT JOIN Tenants T ON T.Id = M.TenantId
+            WHERE T.Id = @id";
+        var connection = _dbConnection.CreateConnection();
+        var result = await connection.QueryAsync<Manager>(query, new { id });
+        return result;
+    }
     public async Task<Manager?> GetManagerWithUserNameAsync(string userName)
     {
         string query =
@@ -121,6 +137,23 @@ public class ManagerRepository
             WHERE UserName = @userName";
         var connection = _dbConnection.CreateConnection();
         var manager = await connection.QuerySingleOrDefaultAsync<Manager?>(query, new { userName });
+        return manager;
+    }
+
+    public async Task<Manager?> GetManagerFullInfoAsync(Guid id)
+    {
+        string query =
+            @"SELECT
+                Id,
+                TenantId,
+                UserName,
+                Password,
+                Email,
+                JoinedAt
+            FROM Managers
+            WHERE Id = @id";
+        var connection = _dbConnection.CreateConnection();
+        var manager = await connection.QuerySingleOrDefaultAsync<Manager>(query, new { id });
         return manager;
     }
     public async Task<bool> UpdateAsync(Manager manager, Guid id)
@@ -153,21 +186,5 @@ public class ManagerRepository
         var connection = _dbConnection.CreateConnection();
         var affected = await connection.ExecuteAsync(query, new { id });
         return affected > 0;
-    }
-    public async Task<Manager?> GetManagerForPromotionAsync(Guid id)
-    {
-        string query =
-            @"SELECT
-                Id,
-                TenantId,
-                UserName,
-                Password,
-                Email,
-                JoinedAt
-            FROM Managers
-            WHERE Id = @id";
-        var connection = _dbConnection.CreateConnection();
-        var manager = await connection.QuerySingleOrDefaultAsync<Manager>(query, new { id });
-        return manager;
     }
 }

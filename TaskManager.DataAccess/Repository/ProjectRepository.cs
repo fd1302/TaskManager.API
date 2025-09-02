@@ -79,7 +79,8 @@ public class ProjectRepository
                 P.CreatedAt
             FROM Projects P
             LEFT JOIN Tenants T ON T.Id = P.TenantId
-            WHERE P.TenantId = @id";
+            WHERE P.TenantId = @id
+            ORDER BY P.CreatedAt DESC";
         var connection = _dbConnection.CreateConnection();
         var result = await connection.QueryAsync<Project>(query, new { id });
         return result;

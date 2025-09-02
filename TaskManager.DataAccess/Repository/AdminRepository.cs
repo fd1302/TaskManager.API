@@ -82,22 +82,60 @@ public class AdminRepository
         var admin = await connection.QuerySingleOrDefaultAsync<Admin?>(query, new { id });
         return admin;
     }
-    public async Task<Admin?> GetAdminForAuthAsync(string userName)
+    public async Task<Admin?> GetFullAdminInfoAsync(string? userName, Guid? id)
     {
-        var query =
-            @"SELECT
-                Id,
-                TenantId,
-                UserName,
-                Password,
-                Email,
-                JoinedAt,
-                Role
-            FROM Admins
-            WHERE UserName = @userName";
+        string query = @"";
         var connection = _dbConnection.CreateConnection();
-        var admin = await connection.QuerySingleOrDefaultAsync<Admin?>(query, new { userName });
-        return admin;
+        if (!string.IsNullOrEmpty(userName))
+        {
+            query =
+                @"SELECT
+                    Id,
+                    TenantId,
+                    UserName,
+                    Password,
+                    Email,
+                    JoinedAt,
+                    Role
+                FROM Admins
+                WHERE UserName = @userName";
+            var admin = await connection.QuerySingleOrDefaultAsync<Admin?>(query, new { userName });
+            return admin;
+        }
+        else if (id != null)
+        {
+            query =
+                @"SELECT
+                    Id,
+                    TenantId,
+                    UserName,
+                    Password,
+                    Email,
+                    JoinedAt,
+                    Role
+                FROM Admins
+                WHERE id = @id";
+            var admin = await connection.QuerySingleOrDefaultAsync<Admin?>(query, new { id });
+            return admin;
+        }
+        return null;
+    }
+    public async Task<IEnumerable<Admin>?> GetAdminsWithTenantIdAsync(Guid id)
+    {
+        string query =
+            @"SELECT
+                A.Id,
+                A.TenantId,
+                A.UserName,
+                A.Email,
+                A.JoinedAt,
+                A.Role
+            FROM Admins A
+            LEFT JOIN Tenants T ON T.Id = A.TenantId
+            WHERE T.Id = @id";
+        var connection = _dbConnection.CreateConnection();
+        var result = await connection.QueryAsync<Admin>(query, new { id });
+        return result;
     }
     public async Task<bool> UpdateAsync(Admin admin, Guid id)
     {

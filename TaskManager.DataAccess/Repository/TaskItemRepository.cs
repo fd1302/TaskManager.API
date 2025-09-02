@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using TaskManager.DataAccess.DbConnection;
-using TaskManager.Shared.Dto_s.TaskItem;
 using TaskManager.Shared.Entities;
 
 namespace TaskManager.DataAccess.Repository;
@@ -102,6 +101,24 @@ public class TaskItemRepository
             WHERE TI.BoardId = @boardId";
         var connection = _dbConnection.CreateConnection();
         var result = await connection.QueryAsync<TaskItem>(query, new { boardId });
+        return result;
+    }
+    public async Task<IEnumerable<TaskItem>?> GetTaskItemsWithMemberIdAsync(Guid id)
+    {
+        string query =
+            @"SELECT
+                Id,
+                BoardId,
+                Title,
+                Description,
+                AssignedMemberId,
+                AssignedMemberName,
+                Status,
+                CreatedAt
+            FROM TaskItems
+            WHERE AssignedMemberId = @id";
+        var connection = _dbConnection.CreateConnection();
+        var result = await connection.QueryAsync<TaskItem>(query, new { id });
         return result;
     }
     public async Task<bool> UpdateAsync(Guid id, TaskItem taskItem)

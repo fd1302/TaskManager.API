@@ -51,15 +51,20 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetAdmin()
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
-        if (token == null)
-        {
-            return Unauthorized();
-        }
-        var id = _authService.GetIdFromToken(token);
+        var id = _authService.GetIdFromToken(token!);
         var result = await _adminManager.GetAdminAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
-    [HttpPatch("patchadmin")]
+    [Authorize(Roles = "Tenant")]
+    [HttpGet("getadminswithtenantid")]
+    public async Task<IActionResult> GetAdminsWithTenantId()
+    {
+        Request.Cookies.TryGetValue("auth-token", out var token);
+        var id = _authService.GetIdFromToken(token!);
+        var result = await _adminManager.GetAdminsWithTenantIdAsync(id);
+        return result is not null ? Ok(result) : NotFound();
+    }
+    [HttpPatch("updateadmin")]
     public async Task<IActionResult> Update(UpdateAdminDto updateAdminDto)
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
@@ -89,9 +94,9 @@ public class AdminController : ControllerBase
     }
     [Authorize(Roles = "Tenant")]
     [HttpPost("promotion")]
-    public async Task<IActionResult> PromotionToAdmin(PromotionDto promotionDto)
+    public async Task<IActionResult> PromotionToAdmin(PromotionDemotionDto promotionDto)
     {
-        var result = await _adminManager.ManagerToAdminPromotionAsync(promotionDto);
+        var result = await _adminManager.PromotionToAdminAsync(promotionDto);
         return Ok(result);
     }
 }

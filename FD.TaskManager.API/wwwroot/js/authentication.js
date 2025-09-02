@@ -1,5 +1,3 @@
-const loginUrl = "/api/authentication"
-
 // Login
 function login(event) {
     event.preventDefault();
@@ -30,7 +28,7 @@ async function tenantLogin(userName, password) {
         password
     }
     try {
-        const response = await fetch(`${loginUrl}/tenantlogin`, {
+        const response = await fetch(`${authUrl}/tenantlogin`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -55,7 +53,7 @@ async function adminLogin(userName, password) {
         password
     }
     try {
-        const response = await fetch(`${loginUrl}/adminlogin`, {
+        const response = await fetch(`${authUrl}/adminlogin`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -80,7 +78,7 @@ async function managerLogin(userName, password) {
         password
     }
     try {
-        const response = await fetch(`${loginUrl}/managerlogin`, {
+        const response = await fetch(`${authUrl}/managerlogin`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -105,7 +103,7 @@ async function memberLogin(userName, password) {
         password
     }
     try {
-        const response = await fetch(`${loginUrl}/memberlogin`, {
+        const response = await fetch(`${authUrl}/memberlogin`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -151,4 +149,14 @@ function tenantSignupForm() {
 
         signupFields.forEach(field => field.style.display = "block");
     }
+}
+
+// Logout
+async function logout() {
+    await fetch(`${authUrl}/logout`, {
+        method: "POST",
+        credentials: "include"
+    });
+    window.location.reload(true);
+    window.location.href = "login.html";
 }

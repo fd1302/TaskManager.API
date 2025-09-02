@@ -51,23 +51,23 @@ public class ManagerController : ControllerBase
     public async Task<IActionResult> GetManager()
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
-        if(token == null)
-        {
-            return Unauthorized();
-        }
-        var id = _authService.GetIdFromToken(token);
+        var id = _authService.GetIdFromToken(token!);
         var result = await _mManager.GetManagerAsync(id);
+        return result is not null ? Ok(result) : NotFound();
+    }
+    [HttpGet("getmanagerswithtenantid")]
+    public async Task<IActionResult> GetManagersWithTenantId()
+    {
+        Request.Cookies.TryGetValue("auth-token", out var token);
+        var info = _authService.GetUserInfoFromToken(token!);
+        var result = await _mManager.GetManagersWithTenantIdAsync(info);
         return result is not null ? Ok(result) : NotFound();
     }
     [HttpPatch("updatemanager")]
     public async Task<IActionResult> Update(UpdateManagerDto updateManagerDto)
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
-        if (token == null)
-        {
-            return Unauthorized();
-        }
-        var id = _authService.GetIdFromToken(token);
+        var id = _authService.GetIdFromToken(token!);
         var result = await _mManager.UpdateAsync(updateManagerDto, id);
         return Ok(result);
     }
@@ -89,15 +89,20 @@ public class ManagerController : ControllerBase
     }
     [Authorize(Roles = "Tenant")]
     [HttpPost("promotion")]
-    public async Task<IActionResult> PromotionToManager(PromotionDto promotionDto)
+    public async Task<IActionResult> PromotionToManager(PromotionDemotionDto promotionDto)
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
-        if (token == null)
-        {
-            return Unauthorized();
-        }
-        var id = _authService.GetIdFromToken(token);
-        var result = await _mManager.MemberToManagerPromotionAsync(promotionDto, id);
+        var id = _authService.GetIdFromToken(token!);
+        var result = await _mManager.PromotionToManagerAsync(promotionDto, id);
+        return Ok(result);
+    }
+    [Authorize(Roles = "Tenant")]
+    [HttpPost("demotion")]
+    public async Task<IActionResult> DemotionToManager(PromotionDemotionDto demotionDto)
+    {
+        Request.Cookies.TryGetValue("auth-token", out var token);
+        var id = _authService.GetIdFromToken(token!);
+        var result = await _mManager.DemotionToManagerAsync(demotionDto, id);
         return Ok(result);
     }
 }

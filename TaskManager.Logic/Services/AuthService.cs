@@ -85,7 +85,7 @@ public class AuthService
     }
     public async Task<AuthenticationResultDto> AdminAuthenticationAsync(AuthenticationDto authenticationDto)
     {
-        var admin = await _adminRepository.GetAdminForAuthAsync(authenticationDto.UserName);
+        var admin = await _adminRepository.GetFullAdminInfoAsync(authenticationDto.UserName, null);
         if (admin == null)
         {
             return new AuthenticationResultDto()
@@ -261,14 +261,14 @@ public class AuthService
         var handler = new JwtSecurityTokenHandler();
         var jwtToken = handler.ReadJwtToken(token);
         var role = jwtToken.Claims.FirstOrDefault(s => s.Type == "role")!.ToString().Replace("role:", "").Trim();
-        var tenantId = jwtToken.Claims.FirstOrDefault(s => s.Type == "TenantId")?.ToString().Replace("TenantId:", "").Trim();
+        var tenantId = jwtToken.Claims.FirstOrDefault(s => s.Type == "tenantId")?.ToString().Replace("tenantId:", "").Trim();
         var userTokenInfo = new UserTokenInfoDto();
         if(role != "Tenant" && tenantId != null)
         {
             userTokenInfo.TenantId = Guid.Parse(tenantId);
         }
         userTokenInfo.Id = GetIdFromToken(token);
-        userTokenInfo.UserName = jwtToken.Claims.FirstOrDefault(s => s.Type == "preferred_username")!.ToString().Replace("preferred_username", "").Trim();
+        userTokenInfo.UserName = jwtToken.Claims.FirstOrDefault(s => s.Type == "preferred_username")!.ToString().Replace("preferred_username:", "").Trim();
         userTokenInfo.Role = role;
         return userTokenInfo;
     }

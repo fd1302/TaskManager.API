@@ -6,18 +6,19 @@ const closeModal = document.getElementById("closeModal");
 
 function openUpdateModal(id, modalType, entity) {
     if(modalType === "project") {
-        projectModalStyle(id, entity);
+        updateProjectModalStyle(id, entity);
     } else if(modalType === "board") {
-        boardModalStyle(id, entity);
+        updateBoardModalStyle(id, entity);
     } else if(modalType === "taskItem") {
-        taskItemModalStyle(id, entity);
+        updateTaskItemModalStyle(id, entity);
     } else {
         return "Modal type has wrong value";
     }
     closeModal.onclick = function() { modal.style.display = "none"};
 }
 
-function projectModalStyle(id, project) {
+// Projects
+function updateProjectModalStyle(id, project) {
     modal.style.display = "block";
     modalHeader.innerHTML = "";
     modalBody.innerHTML = "";
@@ -36,18 +37,39 @@ function projectModalStyle(id, project) {
     const descriptionLabel = document.createElement("label");
     descriptionLabel.textContent = "Description: ";
     modalBody.appendChild(descriptionLabel);
-    const descriptionInput = document.createElement("input");
-    descriptionInput.type = "text";
-    descriptionInput.value = project.description;
-    descriptionInput.id = "projectDescription";
-    modalBody.appendChild(descriptionInput);
+    const descriptionTextarea = document.createElement("textarea");
+    descriptionTextarea.type = "text";
+    descriptionTextarea.value = project.description;
+    descriptionTextarea.id = "projectDescription";
+    modalBody.appendChild(descriptionTextarea);
     const updateBtn = document.createElement("button");
     updateBtn.textContent = "Edit";
     updateBtn.onclick = function() { updateProject(id) };
     modalFooter.appendChild(updateBtn);
 }
 
-function boardModalStyle(id, board) {
+// Boards
+function addBoardModal(id) {
+    modal.style.display = "block";
+    modalHeader.innerHTML = "";
+    modalBody.innerHTML = "";
+    modalFooter.innerHTML = "";
+    const title = document.createElement("h2");
+    title.textContent = "Add Board";
+    modalHeader.appendChild(title);
+    const descriptionLabel = document.createElement("label");
+    descriptionLabel.textContent = "Description: ";
+    modalBody.appendChild(descriptionLabel);
+    const descriptionTextarea = document.createElement("textarea");
+    descriptionTextarea.id = "boardDescription";
+    modalBody.appendChild(descriptionTextarea);
+    const updateBtn = document.createElement("button");
+    updateBtn.textContent = "Add";
+    updateBtn.onclick = function() { addBoard(id) };
+    modalFooter.appendChild(updateBtn);
+}
+
+function updateBoardModalStyle(id, board) {
     modal.style.display = "block";
     modalHeader.innerHTML = "";
     modalBody.innerHTML = "";
@@ -58,18 +80,58 @@ function boardModalStyle(id, board) {
     const descriptionLabel = document.createElement("label");
     descriptionLabel.textContent = "Description: ";
     modalBody.appendChild(descriptionLabel);
-    const descriptionInput = document.createElement("input");
-    descriptionInput.type = "text";
-    descriptionInput.value = board.description;
-    descriptionInput.id = "boardDescription";
-    modalBody.appendChild(descriptionInput);
+    const descriptionTextarea = document.createElement("textarea");
+    descriptionTextarea.type = "text";
+    descriptionTextarea.value = board.description;
+    descriptionTextarea.id = "boardDescription";
+    modalBody.appendChild(descriptionTextarea);
     const updateBtn = document.createElement("button");
     updateBtn.textContent = "Edit";
-    updateBtn.onclick = function() { updateBoard(id) };
+    updateBtn.onclick = function() { updateBoard(id, board.projectId) };
     modalFooter.appendChild(updateBtn);
 }
 
-function taskItemModalStyle(id, taskItem) {
+// Task items
+async function addTaskItemModal(id) {
+    modal.style.display = "block";
+    modalHeader.innerHTML = "";
+    modalBody.innerHTML = "";
+    modalFooter.innerHTML = "";
+    const title = document.createElement("h2");
+    title.textContent = "Add Task";
+    modalHeader.appendChild(title);
+    const titleLabel = document.createElement("label");
+    titleLabel.textContent = "Title: ";
+    modalBody.appendChild(titleLabel);
+    const titleInput = document.createElement("input");
+    titleInput.type = "text";
+    titleInput.id = "taskItemTitle";
+    modalBody.appendChild(titleInput);
+    const descriptionLabel = document.createElement("label");
+    descriptionLabel.textContent = "Description: ";
+    modalBody.appendChild(descriptionLabel);
+    const descriptionTextarea = document.createElement("textarea");
+    descriptionTextarea.type = "text";
+    descriptionTextarea.id = "taskItemDescription";
+    modalBody.appendChild(descriptionTextarea);
+    const members = await getMembersWithTenantId();
+    const memberSelect = document.createElement("select");
+    memberSelect.name = "members";
+    memberSelect.id = "membersForTask";
+    modalBody.appendChild(memberSelect);
+    members.forEach(member => {
+        const option = document.createElement("option");
+        option.value = member.id;
+        option.textContent = member.userName;
+        memberSelect.appendChild(option);
+    });
+    const addBtn = document.createElement("button");
+    addBtn.textContent = "Add";
+    addBtn.onclick = function() { addTaskItem(id) };
+    modalFooter.appendChild(addBtn);
+}
+
+function updateTaskItemModalStyle(id, taskItem) {
     modal.style.display = "block";
     modalHeader.innerHTML = "";
     modalBody.innerHTML = "";
@@ -88,11 +150,11 @@ function taskItemModalStyle(id, taskItem) {
     const descriptionLabel = document.createElement("label");
     descriptionLabel.textContent = "Description: ";
     modalBody.appendChild(descriptionLabel);
-    const descriptionInput = document.createElement("input");
-    descriptionInput.type = "text";
-    descriptionInput.value = taskItem.description;
-    descriptionInput.id = "taskItemDescription";
-    modalBody.appendChild(descriptionInput);
+    const descriptionTextarea = document.createElement("textarea");
+    descriptionTextarea.type = "text";
+    descriptionTextarea.value = taskItem.description;
+    descriptionTextarea.id = "taskItemDescription";
+    modalBody.appendChild(descriptionTextarea);
     const statusLabel = document.createElement("label");
     statusLabel.textContent = "Status: ";
     modalBody.appendChild(statusLabel);

@@ -34,4 +34,16 @@ public class MemberMapping
             Email = updateMemberDto.Email
         };
     }
+    public Member ManagerTOMember(Manager manager)
+    {
+        return new Member()
+        {
+            Id = manager.Id,
+            TenantId = manager.TenantId,
+            UserName = manager.UserName,
+            Password = manager.Password,
+            Email = manager.Email,
+            JoinedAt = manager.JoinedAt
+        };
+    }
 }

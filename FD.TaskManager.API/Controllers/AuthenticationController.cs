@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManager.Logic.Services;
 using TaskManager.Shared.Dto_s.Admin;
 using TaskManager.Shared.Dto_s.Authentication;
@@ -93,5 +94,12 @@ public class AuthenticationController : ControllerBase
         }
         var result = _authService.GetUserInfoFromToken(token);
         return Ok(result);
+    }
+    [Authorize(Roles = "Tenant, Admin, Manager, Member")]
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("auth-token");
+        return Ok();
     }
 }

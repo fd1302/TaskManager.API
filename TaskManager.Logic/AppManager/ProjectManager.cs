@@ -16,8 +16,13 @@ public class ProjectManager
         _projectMapping = projectMapping ??
             throw new ArgumentNullException(nameof(projectMapping));
     }
-    public async Task<AddEntityResultDto> AddAsync(Guid tenantId, AddProjectDto addProjectDto)
+    public async Task<AddEntityResultDto> AddAsync(UserTokenInfoDto userInfo, AddProjectDto addProjectDto)
     {
+        var tenantId = userInfo.Id;
+        if (userInfo.TenantId != null && userInfo.Role != "Tenant")
+        {
+            tenantId = (Guid)userInfo.TenantId;
+        }
         if (string.IsNullOrEmpty(addProjectDto.Name))
         {
             throw new ArgumentNullException("Name can't be empty.");

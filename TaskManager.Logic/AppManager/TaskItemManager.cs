@@ -75,7 +75,7 @@ public class TaskItemManager
         {
             return null;
         }
-        var mappedTaskItems = taskItems.Select(_taskItemMapping.TaskToTaskItemDto);
+        var mappedTaskItems = taskItems.Select(_taskItemMapping.TaskItemToTaskItemDto);
         return mappedTaskItems;
     }
     public async Task<TaskItemDto?> GetTaskItemAsync(Guid id)
@@ -85,7 +85,7 @@ public class TaskItemManager
         {
             return null;
         }
-        var mappedTaskItem = _taskItemMapping.TaskToTaskItemDto(taskItem);
+        var mappedTaskItem = _taskItemMapping.TaskItemToTaskItemDto(taskItem);
         return mappedTaskItem;
     }
     public async Task<IEnumerable<TaskItemDto>?> GetTaskItemsWithBoardIdAsync(Guid id)
@@ -95,8 +95,18 @@ public class TaskItemManager
         {
             return null;
         }
-        var mappedTaskItems = taskItems.Select(_taskItemMapping.TaskToTaskItemDto);
+        var mappedTaskItems = taskItems.Select(_taskItemMapping.TaskItemToTaskItemDto);
         return mappedTaskItems;
+    }
+    public async Task<IEnumerable<TaskItemDto>?> GetTaskItemsWithMemberIdAsync(Guid id)
+    {
+        var taskItems = await _taskItemRepository.GetTaskItemsWithMemberIdAsync(id);
+        if (taskItems == null)
+        {
+            return null;
+        }
+        var mappedItems = taskItems.Select(_taskItemMapping.TaskItemToTaskItemDto);
+        return mappedItems;
     }
     public async Task<ResultDto> UpdateAsync(Guid id, UpdateTaskItemDto updateTaskItemDto)
     {

@@ -1,5 +1,3 @@
-const tenantUrl = "/api/tenant"
-
 async function addTenant(event) {
     event.preventDefault();
     const addTenantDto = {

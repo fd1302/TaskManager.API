@@ -12,7 +12,7 @@ public class MemberRepository
         _dbConnection = dbConnection ??
             throw new ArgumentNullException(nameof(dbConnection));
     }
-    public async Task<int> AddAsync(Member member)
+    public async Task<bool> AddAsync(Member member)
     {
         string query =
             @"INSERT INTO Members
@@ -34,7 +34,7 @@ public class MemberRepository
             member.JoinedAt,
             member.Role
         });
-        return result;
+        return result > 0;
     }
     public async Task<bool> MemberExistsAsync(string? userName, Guid? id)
     {
@@ -127,6 +127,46 @@ public class MemberRepository
         var connection = _dbConnection.CreateConnection();
         var member = await connection.QuerySingleOrDefaultAsync<Member>(query, new { userName });
         return member;
+    }
+    public async Task<IEnumerable<Member>?> GetMembersWithTenantIdAsync(Guid id)
+    {
+        string query =
+            @"SELECT
+                M.Id,
+                M.TenantId,
+                M.UserName,
+                M.Email,
+                M.JoinedAt
+            FROM Members M
+            LEFT JOIN Tenants T ON T.Id = M.TenantId
+            WHERE T.Id = @id";
+        var connection = _dbConnection.CreateConnection();
+        var result = await connection.QueryAsync<Member>(query, new { id });
+        return result;
+    }
+    public async Task<bool> JoinTenantAsync(Guid memberId, Guid tenantId)
+    {
+        string query =
+            @"UPDATE Members
+                SET TenantId = @tenantId
+                WHERE Id = @memberId";
+        var connection = _dbConnection.CreateConnection();
+        var result = await connection.ExecuteAsync(query, new
+        {
+            memberId,
+            tenantId
+        });
+        return result > 0;
+    }
+    public async Task<bool> RemoveTenantMemberAsync(Guid id)
+    {
+        string query =
+            @"UPDATE Members
+            SET TenantId = NULL
+            WHERE Id = @id";
+        var connection = _dbConnection.CreateConnection();
+        var result = await connection.ExecuteAsync(query, new { id });
+        return result > 0;
     }
     public async Task<bool> UpdateAsync(Member member, Guid id)
     {
