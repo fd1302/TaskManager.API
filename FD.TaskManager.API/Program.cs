@@ -43,6 +43,7 @@ builder.Services.AddSingleton<PasswordHashing>();
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<EmailVerification>();
 
+
 // Jwt bearer
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
