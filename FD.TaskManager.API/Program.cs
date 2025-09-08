@@ -85,8 +85,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.MapScalarApiReference(options =>
     {
         options
@@ -94,7 +94,7 @@ var app = builder.Build();
         .WithTheme(ScalarTheme.Moon);
     });
     app.MapOpenApi();
-//}
+}
 
 app.UseForwardedHeaders();
 
