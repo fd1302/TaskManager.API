@@ -40,7 +40,7 @@ async function getMembersWithTenantId() {
     }
 }
 
-async function getMembers() {
+async function getMembers(searchQuery) {
     try {
         const response = await fetch(`${memberUrl}/getmembers`);
         if(!response.ok) {

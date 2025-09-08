@@ -16,6 +16,7 @@ public class BoardController : ControllerBase
         _boardManager = boardManager ??
             throw new ArgumentNullException(nameof(boardManager));
     }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
     [HttpPost("add")]
     public async Task<IActionResult> Add(Guid projectId, AddBoardDto addBoardDto)
     {

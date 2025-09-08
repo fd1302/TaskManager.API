@@ -302,7 +302,8 @@ async function getManager() {
     }
 }
 
-function managerInfoStyle(info) {
+async function managerInfoStyle(info) {
+    const tenant = await getTenant();
     const mainContainer = document.getElementById("mainContainerItem");
     mainContainer.innerHTML = "";
     mainContainer.className = "main-container-item-userinfo";
