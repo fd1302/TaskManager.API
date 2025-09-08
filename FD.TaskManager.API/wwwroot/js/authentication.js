@@ -5,20 +5,49 @@ function login(event) {
         userName: document.getElementById("username").value,
         password: document.getElementById("password").value,
         role: document.getElementById("role").value
-    }
+    };
+    checkInputValues(loginInfo);
     if(loginInfo.role === "Tenant") {
         tenantLogin(loginInfo.userName, loginInfo.password);
-    }
-    else if(loginInfo.role === "Admin") {
+    } else if(loginInfo.role === "Admin") {
         adminLogin(loginInfo.userName, loginInfo.password);
-    }
-    else if(loginInfo.role === "Manager") {
+    } else if(loginInfo.role === "Manager") {
         managerLogin(loginInfo.userName, loginInfo.password);
-    }
-    else if(loginInfo.role === "Member") {
+    } else if(loginInfo.role === "Member") {
         memberLogin(loginInfo.userName, loginInfo.password);
     } else {
         return;
+    }
+}
+
+function checkInputValues(loginInfo) {
+    let userNameLabel = document.getElementById("userNameLabel");
+    let passwordLabel = document.getElementById("passwordLabel");
+    let roleLabel = document.getElementById("roleLabel");
+    if(loginInfo.userName === "") {
+        userNameLabel.textContent = "Username*";
+        userNameLabel.style.color = "#ff6363ff";
+    }
+    if(loginInfo.password === "") {
+        passwordLabel.textContent = "Username*";
+        passwordLabel.style.color = "#ff6363ff";
+    }
+    if(loginInfo.role === "") {
+        roleLabel.textContent = "Role - Select your role please";
+        roleLabel.style.color = "#ff6363ff";
+    }
+}
+
+function loginErrorMessages(message) {
+    let userNameError = document.getElementById("userNameError");
+    let passwordError = document.getElementById("passwordError");
+    if(message === "User not found.") {
+        userNameError.textContent = "Wrong username.";
+        passwordError.textContent = "";
+    }
+    if(message === "Wrong password.") {
+        passwordError.textContent = "Wrong password, try again.";
+        userNameError.textContent = "";
     }
 }
 
@@ -36,10 +65,11 @@ async function tenantLogin(userName, password) {
             },
             body: JSON.stringify(tenantLoginDto)
         });
+        const result = await response.json();
         if(response.ok) {
             window.location.href = "profile.html"
-        }
-        else if(!response.ok) {
+        } else if(!response.ok) {
+            loginErrorMessages(result.errorMessage);
             throw new Error(`There was a problem while handling the request: ${response.status}`);
         }
     } catch (error) {
@@ -63,8 +93,7 @@ async function adminLogin(userName, password) {
         });
         if(response.ok) {
             window.location.href = "profile.html";
-        }
-        else if(!response.ok) {
+        } else if(!response.ok) {
             throw new Error(`There was a problem while handling the request: ${response.status}`);
         }
     } catch (error) {
@@ -88,8 +117,7 @@ async function managerLogin(userName, password) {
         });
         if(response.ok) {
             window.location.href = "profile.html";
-        }
-        else if(!response.ok) {
+        } else if(!response.ok) {
             throw new Error(`There was a problem while handling the request: ${response.status}`);
         }
     } catch (error) {
@@ -113,8 +141,7 @@ async function memberLogin(userName, password) {
         });
         if(response.ok) {
             window.location.href = "profile.html";
-        }
-        else if(!response.ok) {
+        } else if(!response.ok) {
             throw new Error(`There was a problem while handling the request: ${response.status}`);
         }
     } catch (error) {
@@ -139,8 +166,7 @@ function tenantSignupForm() {
         role.style.display = "block";
 
         signupFields.forEach(field => field.style.display = "none");
-    }
-    else {
+    } else {
         formTitle.textContent = "Sign Up As Tenant";
         loginBtn.style.display = "none"
         signupBtn.style.display = "block";

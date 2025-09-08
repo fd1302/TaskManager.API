@@ -120,7 +120,7 @@ async function updateTenant() {
         description: document.getElementById("descriptionUpdate").value
     };
     try {
-        const response = await fetch(`${tenantUrl}/updatetenant`, {
+        const response = await fetch(`${tenantUrl}/update`, {
             method: "PATCH",
             headers: {
                 Accept: "application/json",
@@ -676,7 +676,7 @@ function addProjectStyle() {
 }
 
 async function deleteProject(id) {
-    const response = await fetch(`${projectUrl}/deleteproject?id=${id}`, {
+    const response = await fetch(`${projectUrl}/delete?id=${id}`, {
         method: "DELETE"
     });
     if(response.ok) {
@@ -793,6 +793,11 @@ function boardStyle(boards, projectId) {
     const mainContainer = document.getElementById("mainContainerItem");
     mainContainer.innerHTML = "";
     mainContainer.className = "main-container-item-box";
+    const backBtn = document.createElement("button");
+    backBtn.classList.add("back-button");
+    backBtn.textContent = "<-- Back to projects";
+    backBtn.onclick = function() { showProjects() };
+    mainContainer.appendChild(backBtn);
     boards.forEach(board => {
         const item = document.createElement("div");
         item.classList.add("container-item");
@@ -820,7 +825,7 @@ function boardStyle(boards, projectId) {
         buttonsDiv.appendChild(buttonsSpan);
         const showTaskItems = document.createElement("a");
         showTaskItems.textContent = "Related tasks";
-        showTaskItems.onclick = function() { getTasksWithBoardId(board.id)};
+        showTaskItems.onclick = function() { getTasksWithBoardId(board.id, board.projectId)};
         buttonsSpan.appendChild(showTaskItems);
         const splitterA = document.createElement("a");
         splitterA.classList.add("buttons-splitter");
@@ -846,11 +851,11 @@ function boardStyle(boards, projectId) {
         deleteBtn.textContent = "Delete";
         deleteBtn.onclick = function() { deleteBoard(board.id, projectId    ) };
         buttonsSpan.appendChild(deleteBtn);
-    })
+    });
 }
 
 // Task functions
-async function getTasksWithBoardId(id) {
+async function getTasksWithBoardId(id, projectId) {
     try {
         const response = await fetch(`${taskItemUrl}/gettaskitemwithboardid?id=${id}`);
         if(!response.ok) {
@@ -862,16 +867,21 @@ async function getTasksWithBoardId(id) {
             alert("No task found.");
             return;
         }
-        taskStyle(taskItems, id);
+        taskStyle(taskItems, projectId);
     } catch (error) {
         console.error(`Error: ${error}`);
     }
 }
 
-function taskStyle(taskItems) {
+function taskStyle(taskItems, projectId) {
     const mainContainer = document.getElementById("mainContainerItem");
     mainContainer.innerHTML = "";
     mainContainer.className = "main-container-item-box";
+    const backBtn = document.createElement("button");
+    backBtn.classList.add("back-button");
+    backBtn.textContent = "<-- Back to boards";
+    backBtn.onclick = function() { getBoardsWithProjectId(projectId) };
+    mainContainer.appendChild(backBtn);
     taskItems.forEach(taskItem => {
         const item = document.createElement("div");
         item.classList.add("container-item");
@@ -920,13 +930,14 @@ function taskStyle(taskItems) {
         editBtn.onclick = function() { openUpdateModal(taskItem.id, "taskItem", taskItem) };
         buttonsSpan.appendChild(editBtn);
         const splitter = document.createElement("a");
+        splitter.classList.add("buttons-splitter");
         splitter.textContent = "  /  ";
         buttonsSpan.appendChild(splitter)
         const deleteBtn = document.createElement("a");
         deleteBtn.textContent = "Delete";
         deleteBtn.onclick = function() { deleteTaskItem(taskItem.id, taskItem.boardId) };
         buttonsSpan.appendChild(deleteBtn);
-    })
+    });
 }
 
 async function getMemberTasks() {
@@ -934,6 +945,12 @@ async function getMemberTasks() {
     const mainContainer = document.getElementById("mainContainerItem");
     mainContainer.innerHTML = "";
     mainContainer.className = "main-container-item-box";
+    const countTaskItems = jsonIsEmpty(taskItems);
+    if(countTaskItems == true) {
+        const noTaskText = document.createElement("h2");
+        noTaskText.textContent = "You don't have any task at the moment.";
+        mainContainer.appendChild(noTaskText);
+    }
     taskItems.forEach(taskItem => {
         const item = document.createElement("div");
         item.classList.add("container-item");
@@ -988,7 +1005,7 @@ async function getMemberTasks() {
         deleteBtn.textContent = "Delete";
         deleteBtn.onclick = function() { deleteTaskItem(taskItem.id, taskItem.boardId) };
         buttonsSpan.appendChild(deleteBtn);
-    })
+    });
 }
 
 function jsonIsEmpty(jsn) {

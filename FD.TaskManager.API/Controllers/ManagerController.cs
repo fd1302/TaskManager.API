@@ -20,7 +20,7 @@ public class ManagerController : ControllerBase
         _authService = authService ??
             throw new ArgumentNullException(nameof(authService));
     }
-    [HttpPost("addmanager")]
+    [HttpPost("add")]
     public async Task<IActionResult> Add(AddManagerDto addManagerDto)
     {
         try
@@ -47,6 +47,7 @@ public class ManagerController : ControllerBase
         var result = await _mManager.GetManagersAsync(searchQuery);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Manager")]
     [HttpGet("getmanager")]
     public async Task<IActionResult> GetManager()
     {
@@ -55,6 +56,7 @@ public class ManagerController : ControllerBase
         var result = await _mManager.GetManagerAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Tenant, Admin")]
     [HttpGet("getmanagerswithtenantid")]
     public async Task<IActionResult> GetManagersWithTenantId()
     {
@@ -63,7 +65,8 @@ public class ManagerController : ControllerBase
         var result = await _mManager.GetManagersWithTenantIdAsync(info);
         return result is not null ? Ok(result) : NotFound();
     }
-    [HttpPatch("updatemanager")]
+    [Authorize(Roles = "Manager")]
+    [HttpPatch("update")]
     public async Task<IActionResult> Update(UpdateManagerDto updateManagerDto)
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
@@ -71,7 +74,8 @@ public class ManagerController : ControllerBase
         var result = await _mManager.UpdateAsync(updateManagerDto, id);
         return Ok(result);
     }
-    [HttpDelete("deletemanager")]
+    [Authorize(Roles = "Manager")]
+    [HttpDelete("delete")]
     public async Task<IActionResult> Delete()
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
@@ -96,7 +100,7 @@ public class ManagerController : ControllerBase
         var result = await _mManager.PromotionToManagerAsync(promotionDto, id);
         return Ok(result);
     }
-    [Authorize(Roles = "Tenant")]
+    [Authorize(Roles = "Tenant, Admin")]
     [HttpPost("demotion")]
     public async Task<IActionResult> DemotionToManager(PromotionDemotionDto demotionDto)
     {

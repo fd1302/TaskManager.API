@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Logic.AppManager;
 using TaskManager.Shared.Dto_s.Board;
@@ -33,19 +34,22 @@ public class BoardController : ControllerBase
         var result = await _boardManager.GetBoardAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
     [HttpGet("getboardswithprojectid")]
     public async Task<IActionResult> GetBoardWithProjectId(Guid id)
     {
         var result = await _boardManager.GetBoardWithProjectIdAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
-    [HttpPut("updateboard")]
+    [Authorize(Roles = "Tenant, Admin, Manager")]
+    [HttpPut("update")]
     public async Task<IActionResult> Update(Guid id, UpdateBoardDto updateBoardDto)
     {
         var result = await _boardManager.UpdateAsync(id, updateBoardDto);
         return Ok(result);
     }
-    [HttpDelete("deleteboard")]
+    [Authorize(Roles = "Tenant, Admin, Manager")]
+    [HttpDelete("delete")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _boardManager.DeleteAsync(id);

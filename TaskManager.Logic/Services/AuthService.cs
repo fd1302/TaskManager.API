@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Siahroud.Logic.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -16,9 +17,10 @@ public class AuthService
     private readonly ManagerRepository _managerRepository;
     private readonly MemberRepository _memberRepository;
     private readonly PasswordHashing _passwordHashing;
+    private readonly SMSService _smsService;
     private readonly IConfiguration _configuration;
     public AuthService(TenantRepository tenantRepository, AdminRepository adminRepository, ManagerRepository managerRepository,
-        MemberRepository memberRepository, PasswordHashing passwordHashing, IConfiguration configuration)
+        MemberRepository memberRepository, PasswordHashing passwordHashing, SMSService smsService, IConfiguration configuration)
     {
         _tenantRepository = tenantRepository ??
             throw new ArgumentNullException(nameof(tenantRepository));
@@ -30,6 +32,8 @@ public class AuthService
             throw new ArgumentNullException(nameof(memberRepository));
         _passwordHashing = passwordHashing ??
             throw new ArgumentNullException(nameof(passwordHashing));
+        _smsService = smsService ??
+            throw new ArgumentNullException(nameof(smsService));
         _configuration = configuration ??
             throw new ArgumentNullException(nameof(configuration));
     }

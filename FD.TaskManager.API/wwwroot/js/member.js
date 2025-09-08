@@ -5,8 +5,9 @@ async function addMember(event) {
         password: document.getElementById("password").value,
         email: document.getElementById("email").value
     };
+    checkSignupInputValues(addMemberDto);
     try {
-        const response = await fetch(`${memberUrl}/addmember`, {
+        const response = await fetch(`${memberUrl}/add`, {
             method: "POST",
             headers: {
                 Accept: "application/json",

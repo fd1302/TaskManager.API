@@ -8,7 +8,7 @@ async function addTenant(event) {
         description: document.getElementById("description").value
     }
     try {
-        const response = await fetch(`${tenantUrl}/addtenant`, {
+        const response = await fetch(`${tenantUrl}/add`, {
             method: "POST",
             headers: {
                 Accept: "application/json",

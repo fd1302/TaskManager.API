@@ -45,5 +45,12 @@
 }
 
 .description-image img {
-    height: 800px;
+    width: 80%;
+    height: auto;
+}
+
+@media (max-width: 800px) {
+    .description-image img {
+        width: 100%;
+    }
 }

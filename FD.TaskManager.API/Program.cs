@@ -1,7 +1,9 @@
 using FD.TaskManager.API.Extentions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Siahroud.Logic.Services;
 using System.Text;
 using TaskManager.DataAccess.DbConnection;
 using TaskManager.DataAccess.Repository;
@@ -42,7 +44,9 @@ builder.Services.AddSingleton<SubscriptionMapping>();
 builder.Services.AddSingleton<PasswordHashing>();
 builder.Services.AddSingleton<AuthService>();
 builder.Services.AddSingleton<EmailVerification>();
-
+builder.Services.AddSingleton<SMSService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient();
 
 // Jwt bearer
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -72,11 +76,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor
+    | ForwardedHeaders.XForwardedProto;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.MapScalarApiReference(options =>
     {
         options
@@ -84,7 +94,9 @@ if (app.Environment.IsDevelopment())
         .WithTheme(ScalarTheme.Moon);
     });
     app.MapOpenApi();
-}
+//}
+
+app.UseForwardedHeaders();
 
 app.UseHttpsRedirection();
 
@@ -93,6 +105,7 @@ app.UseMiddleware<ProfileMiddleware>();
 
 app.UseStaticFiles();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

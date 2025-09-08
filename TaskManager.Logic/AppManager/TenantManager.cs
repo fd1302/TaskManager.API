@@ -165,4 +165,9 @@ public class TenantManager
             Message = "Tenant deleted successfuly"
         };
     }
+    public async Task<bool> ExistAsync(string? userName, Guid? id)
+    {
+        bool result = await _tenantRepository.ExistsAsync(userName, id);
+        return result;
+    }
 }

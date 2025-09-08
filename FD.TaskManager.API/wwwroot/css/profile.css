@@ -242,6 +242,19 @@ body {
     background-color: var(--text-color-hover);
 }
 
+.back-button {
+    padding: 12px 16px;
+    border: none;
+    background-color: var(--text-color);
+    color: var(--sidebar-bg-color);
+    border-radius: 1em;
+}
+
+.back-button:hover {
+    background-color: var(--text-color-hover);
+    color: var(--base-text-color);
+}
+
 
 footer {
     background-color: #1b191b;

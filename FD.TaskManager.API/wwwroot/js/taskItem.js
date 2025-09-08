@@ -46,7 +46,7 @@ async function updateTaskItem(id) {
         status: document.getElementById("taskItemStatus").value
     };
     try {
-        const response = await fetch(`${taskItemUrl}/updatetaskitem?id=${id}`, {
+        const response = await fetch(`${taskItemUrl}/update?id=${id}`, {
             method: "PATCH",
             headers: {
                 Accept: "application/json",

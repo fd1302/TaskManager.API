@@ -20,7 +20,7 @@ public class MemberController : ControllerBase
         _authService = authService ??
             throw new ArgumentNullException(nameof(authService));
     }
-    [HttpPost("addmember")]
+    [HttpPost("add")]
     public async Task<IActionResult> Add(AddMemberDto addMemberDto)
     {
         try
@@ -50,6 +50,7 @@ public class MemberController : ControllerBase
         var result = await _memberManager.GetMembersAsync(searchQuery);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Member")]
     [HttpGet("getmember")]
     public async Task<IActionResult> GetMember()
     {
@@ -58,6 +59,7 @@ public class MemberController : ControllerBase
         var result = await _memberManager.GetMemberAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
     [HttpGet("getmemberswithtenantid")]
     public async Task<IActionResult> GetMembersWithTenantId()
     {
@@ -66,6 +68,7 @@ public class MemberController : ControllerBase
         var result = await _memberManager.GetMembersWithTenantIdAsync(info);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
     [HttpGet("getmemberswithnotenant")]
     public async Task<IActionResult> GetMembersWithNoTenant()
     {

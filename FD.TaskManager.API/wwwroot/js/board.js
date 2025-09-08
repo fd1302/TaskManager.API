@@ -26,7 +26,7 @@ async function updateBoard(id, projectId) {
         description: document.getElementById("boardDescription").value
     };
     try {
-        const response = await fetch(`${boardUrl}/updateboard?id=${id}`, {
+        const response = await fetch(`${boardUrl}/update?id=${id}`, {
             method: "PUT",
             headers: {
                 Accept: "application/json",

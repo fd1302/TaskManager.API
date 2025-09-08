@@ -30,7 +30,7 @@ async function updateProject(id) {
         description: document.getElementById("projectDescription").value
     };
     try {
-        const response = await fetch(`${projectUrl}/updateproject?id=${id}`, {
+        const response = await fetch(`${projectUrl}/update?id=${id}`, {
             method: "PATCH",
             headers: {
                 Accept: "application/json",
@@ -41,7 +41,7 @@ async function updateProject(id) {
         const result = await response.json();
         if(response.ok) {
             alert(result.message);
-            getProjects();
+            showProjects();
         }else if(!response.ok) {
             throw new Error(`There was a problem while handling the request: ${result.message}`);
         }

@@ -47,6 +47,7 @@ public class AdminController : ControllerBase
         var result = await _adminManager.GetAdminsAsync(searchQuery);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Admin")]
     [HttpGet("getadmin")]
     public async Task<IActionResult> GetAdmin()
     {
@@ -64,6 +65,7 @@ public class AdminController : ControllerBase
         var result = await _adminManager.GetAdminsWithTenantIdAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Admin")]
     [HttpPatch("updateadmin")]
     public async Task<IActionResult> Update(UpdateAdminDto updateAdminDto)
     {
@@ -76,6 +78,7 @@ public class AdminController : ControllerBase
         var result = await _adminManager.UpdateAsync(updateAdminDto, id);
         return Ok(result);
     }
+    [Authorize(Roles = "Admin")]
     [HttpDelete("deleteadmin")]
     public async Task<IActionResult> Delete()
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManager.Logic.AppManager;
 using TaskManager.Logic.Services;
 using TaskManager.Shared.Dto_s.TaskItem;
@@ -18,6 +19,7 @@ public class TaskItemController : ControllerBase
         _authService = authService ??
             throw new ArgumentNullException(nameof(authService));
     }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
     [HttpPost("add")]
     public async Task<IActionResult> Add(AddTaskItemDto addTaskItemDto)
     {
@@ -44,12 +46,14 @@ public class TaskItemController : ControllerBase
         var result = await _taskItemManager.GetTaskItemAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
     [HttpGet("gettaskitemwithboardid")]
     public async Task<IActionResult> GetTaskItemWithBoardId(Guid id)
     {
         var result = await _taskItemManager.GetTaskItemsWithBoardIdAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Member")]
     [HttpGet("gettaskitemswithmemberid")]
     public async Task<IActionResult> GetTaskItemsWithMemberId()
     {
@@ -58,12 +62,13 @@ public class TaskItemController : ControllerBase
         var result = await _taskItemManager.GetTaskItemsWithMemberIdAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
-    [HttpPatch("updatetaskitem")]
+    [HttpPatch("update")]
     public async Task<IActionResult> Update(Guid id, UpdateTaskItemDto updateTaskItemDto)
     {
         var result = await _taskItemManager.UpdateAsync(id, updateTaskItemDto);
         return result.Success is not false ? Ok(result) : NotFound(result);
     }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
     [HttpDelete("delete")]
     public async Task<IActionResult> Delete(Guid id)
     {

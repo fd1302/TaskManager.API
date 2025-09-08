@@ -5,9 +5,9 @@ async function addManager(event) {
         password: document.getElementById("password").value,
         email: document.getElementById("email").value,
         tenantId: document.getElementById("tenantSelect").value
-    }
+    };
     try {
-        const response = await fetch(`${managerUrl}/addmanager`, {
+        const response = await fetch(`${managerUrl}/add`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -46,7 +46,7 @@ async function updateManager() {
         email: document.getElementById("managerEmail").value
     };
     try {
-        const response = await fetch(`${managerUrl}/updateManager`, {
+        const response = await fetch(`${managerUrl}/update`, {
             method: "PATCH",
             headers: {
                 Accept: "application/json",

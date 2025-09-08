@@ -40,6 +40,7 @@ public class ProjectController : ControllerBase
         var result = await _projectManager.GetProjectAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
+    [Authorize(Roles = "Tenant, Admin, Manager")]
     [HttpGet("getprojectswithtenantid")]
     public async Task<IActionResult> GetProjectsWithTenantId()
     {
@@ -52,13 +53,15 @@ public class ProjectController : ControllerBase
         var result = await _projectManager.GetProjectsWithTenantIdAsync(id);
         return result is not null ? Ok(result) : NotFound();
     }
-    [HttpPatch("updateproject")]
+    [Authorize(Roles = "Tenant, Admin, Manager")]
+    [HttpPatch("update")]
     public async Task<IActionResult> Update(Guid id, UpdateProjectDto updateProjectDto)
     {
         var result = await _projectManager.UpdateAsync(id, updateProjectDto);
         return result.Success is not false ? Ok(result) : NotFound(result.Message);
     }
-    [HttpDelete("deleteproject")]
+    [Authorize(Roles = "Tenant, Admin, Manager")]
+    [HttpDelete("delete")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _projectManager.DeleteAsync(id);

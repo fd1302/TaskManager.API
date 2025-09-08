@@ -72,6 +72,13 @@
     text-align: center;
 }
 
+.login-error {
+    display: flex;
+    justify-content: center;
+    color: #ff4747;
+    font-size: smaller;
+}
+
 .signup-btn {
     display: none;
 }
