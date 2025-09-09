@@ -11,17 +11,20 @@ namespace TaskManager.Logic.AppManager;
 public class MemberManager
 {
     private readonly MemberRepository _memberRepository;
+    private readonly AdminRepository _adminRepository;
     private readonly ManagerRepository _managerRepository;
     private readonly MemberMapping _memberMapping;
     private readonly PasswordHashing _passHasher;
     private readonly EmailVerification _emailVerification;
     private readonly AuthService _authService;
-    public MemberManager(MemberRepository memberRepository, ManagerRepository managerRepository,
+    public MemberManager(MemberRepository memberRepository, AdminRepository adminRepository, ManagerRepository managerRepository,
         MemberMapping memberMapping, PasswordHashing passHasher,
         EmailVerification emailVerification, AuthService authService)
     {
         _memberRepository = memberRepository ??
             throw new ArgumentNullException(nameof(memberRepository));
+        _adminRepository = adminRepository ??
+            throw new ArgumentNullException(nameof(adminRepository));
         _managerRepository = managerRepository ??
             throw new ArgumentNullException(nameof(managerRepository));
         _memberMapping = memberMapping ??
@@ -60,7 +63,9 @@ public class MemberManager
             throw new ArgumentException("Password can't be empty or contan white space.");
         }
         bool userNameExists = await _memberRepository.MemberExistsAsync(addMemberDto.UserName, null);
-        if (userNameExists)
+        var checkAdminTable = await _adminRepository.GetFullAdminInfoAsync(addMemberDto.UserName, null);
+        bool checkManagerTable = await _managerRepository.ExistsAsync(addMemberDto.UserName, null);
+        if (userNameExists || checkAdminTable != null || checkManagerTable)
         {
             throw new ArgumentException("Username already exists.");
         }

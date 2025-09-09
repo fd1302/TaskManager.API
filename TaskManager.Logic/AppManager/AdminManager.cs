@@ -173,6 +173,7 @@ public class AdminManager
         {
             throw new Exception("Invalid role.");
         }
+        bool adminExists = await _adminRepository.ExistsAsync(promotionDto.UserId);
         var manager = await _managerRepository.GetManagerFullInfoAsync(promotionDto.UserId);
         if (manager == null)
         {
