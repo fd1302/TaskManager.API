@@ -12,7 +12,7 @@ async function addBoard(id) {
             body: JSON.stringify(addDto)
         });
         if(response.ok) {
-            alert("Board added.");
+            alert("Board added successfuly.");
         } else {
             throw new Error(`There was a problem while handling the request: ${response.status}`);
         }

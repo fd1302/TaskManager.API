@@ -14,7 +14,8 @@ async function addProject() {
         })
         const result = await response.json();
         if(response.ok) {
-            alert(result.id);
+            if(result.isAdded == true)
+                alert("Project added successfully.");
         }
         if(!response.ok) {
             throw new Error(`There was a problem while handling the request: ${response.status}`);

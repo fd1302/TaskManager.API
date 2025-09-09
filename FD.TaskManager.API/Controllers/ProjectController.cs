@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Logic.AppManager;
 using TaskManager.Logic.Services;
+using TaskManager.Shared.Dto_s;
 using TaskManager.Shared.Dto_s.Project;
 
 namespace FD.TaskManager.API.Controllers;
@@ -21,7 +22,7 @@ public class ProjectController : ControllerBase
     }
     [Authorize(Roles = "Tenant, Admin")]
     [HttpPost("add")]
-    public async Task<IActionResult> Add(AddProjectDto addProjectDto)
+    public async Task<ActionResult<AddEntityResultDto>> Add(AddProjectDto addProjectDto)
     {
         Request.Cookies.TryGetValue("auth-token", out var token);
         var info = _authService.GetUserInfoFromToken(token!);
