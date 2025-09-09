@@ -780,7 +780,7 @@ async function getBoardsWithProjectId(id) {
 }
 
 async function deleteBoard(id, projectId) {
-    const response = await fetch(`${boardUrl}/deleteboard?id=${id}`, {
+    const response = await fetch(`${boardUrl}/delete?id=${id}`, {
         method: "DELETE"
     });
     if(response.ok) {
